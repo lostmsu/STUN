@@ -25,7 +25,7 @@ namespace SIPSorcery.Net.IntegrationTests
 {
     public class MockTurnServer : IDisposable
     {
-        private Microsoft.Extensions.Logging.ILogger logger = SIPSorcery.Sys.Log.Logger;
+        readonly ILogger logger;
 
         private int _listenPort = STUNConstants.DEFAULT_STUN_PORT;
         private IPAddress _listenAddress = IPAddress.Loopback;
@@ -40,11 +40,12 @@ namespace SIPSorcery.Net.IntegrationTests
 
         public IPEndPoint ListeningEndPoint { get; private set; }
 
-        public MockTurnServer() : this(IPAddress.Loopback, STUNConstants.DEFAULT_STUN_PORT)
+        public MockTurnServer(ILogger logger) : this(IPAddress.Loopback, STUNConstants.DEFAULT_STUN_PORT, logger)
         { }
 
-        public MockTurnServer(IPAddress listenAddress, int port)
+        public MockTurnServer(IPAddress listenAddress, int port, ILogger logger)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _listenAddress = listenAddress;
             _listenPort = port;
 
