@@ -13,6 +13,8 @@
 // BSD 3-Clause "New" or "Revised" License, see included LICENSE.md file.
 //-----------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace SIPSorcery.Net
 {
     /// <summary>
@@ -120,6 +122,7 @@ namespace SIPSorcery.Net
             return TinyJson.JSONWriter.ToJson(this);
         }
 
+        [RequiresDynamicCode("Extensively uses Reflection")]
         public static bool TryParse(string json, out RTCIceCandidateInit init)
         {
             //init = JsonSerializer.Deserialize< RTCIceCandidateInit>(json);

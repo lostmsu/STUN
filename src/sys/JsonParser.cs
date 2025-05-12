@@ -17,6 +17,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -40,13 +41,19 @@ namespace TinyJson
     // - No JIT Emit support to parse structures quickly
     // - Limited to parsing <2GB JSON files (due to int.MaxValue)
     // - Parsing of abstract classes or interfaces is NOT supported and will throw an exception.
-    public static class JSONParser
+#if NET8_0_OR_GREATER
+    [RequiresDynamicCode("Extensively uses Reflection")]
+#endif
+    static class JSONParser
     {
         [ThreadStatic] static Stack<List<string>> splitArrayPool;
         [ThreadStatic] static StringBuilder stringBuilder;
         [ThreadStatic] static Dictionary<Type, Dictionary<string, FieldInfo>> fieldInfoCache;
         [ThreadStatic] static Dictionary<Type, Dictionary<string, PropertyInfo>> propertyInfoCache;
 
+#if NET8_0_OR_GREATER
+        [RequiresDynamicCode("Extensively uses Reflection")]
+#endif
         public static T FromJson<T>(this string json)
         {
             // Initialize, if needed, the ThreadStatic variables
@@ -141,6 +148,7 @@ namespace TinyJson
             return splitArray;
         }
 
+        [RequiresDynamicCode("Extensively uses Reflection")]
         internal static object ParseValue(Type type, string json)
         {
             if (type == typeof(string))
@@ -344,6 +352,7 @@ namespace TinyJson
             return nameToMember;
         }
 
+        [RequiresDynamicCode("Extensively uses Reflection")]
         static object ParseObject(Type type, string json)
         {
             // For .net8 this call needs to change to: RuntimeHelpers.GetUninitializedObject(type);
